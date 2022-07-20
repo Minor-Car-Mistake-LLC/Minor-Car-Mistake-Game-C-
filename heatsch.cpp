@@ -6,11 +6,13 @@
 #include <fstream>
 #include <list>
 #include <vector>
+#include <thread>
 using namespace std;
 int carnum = 1;
 int hits = 15;
 int funamm = 1;
 int points = 0;
+int autoclicker = 1;
 int price = 10 * carnum * abs((hits-1)-(15*carnum));
 string sel;
 
@@ -26,9 +28,16 @@ int h = 1;
 string Text;
 vector<std::string> lines = {};
 
+void autoclick() {
+    while (true) {
+        points += autoclicker;
+        Sleep(1000);
+    }
+}
+
 void shop() {
     system("CLS");
-    cout << "C to buy better car (" << 1000 * carnum << " Funny points)\nM to gain more Funny points per minor car mistake (" << 50 * carnum * funamm << " Funny points)\nS to shorten the amount of hits per minor car mistake (" << 10 * carnum * abs((hits - 1)-(15*carnum)) << " Funny points)\nE to escape\n";
+    cout << "C to buy better car (" << 1000 * carnum << " Funny points)\nA to buy better autoclicker (" << 500 * autoclicker << ") Funny points\nM to gain more Funny points per minor car mistake (" << 50 * carnum * funamm << " Funny points)\nS to shorten the amount of hits per minor car mistake (" << 10 * carnum * abs((hits - 1)-(15*carnum)) << " Funny points)\nE to escape\n";
     cin >>  sel;
     if (lower(sel) == "c"){
         if (points >= 1000 * carnum){
@@ -41,8 +50,7 @@ void shop() {
                 hits = 15;
                 hits *= carnum;
                 funamm *= carnum;
-                cout << "\nPurchase successful!";
-                Sleep(1000);
+                shop();
             }
         } else{
             cout << "\nYou don't have enough Funny points!";
@@ -54,6 +62,7 @@ void shop() {
             if (hits >= 1) {
                 points -= price;
                 hits -= 1;
+                shop();
             } else {
                 cout << "You are at the minimum amount of hits!";
                 Sleep(1000);
@@ -66,12 +75,21 @@ void shop() {
         if (points >= 50 *carnum * funamm){
             funamm += 1;
             points -= 50 * carnum * funamm;
+            shop();
+        } else {
+            cout << "\nYou don't have enough Funny points!";
+            Sleep(1000);
+        }
+    } else if (lower(sel) == "a") {
+        if (points >= 500*autoclicker){
+            points -= 500 * autoclicker;
+            autoclicker *= autoclicker;
+            shop();
         } else {
             cout << "\nYou don't have enough Funny points!";
             Sleep(1000);
         }
     }
-
 }
 
 int main() {
@@ -81,7 +99,7 @@ int main() {
         cout << "";
     } else {
         ofstream save("mcm.save");
-        save << "1\n15\n1\n0";
+        save << "1\n15\n1\n0\n1";
         save.close();
     }
 
@@ -93,7 +111,9 @@ int main() {
     hits = stoi(lines[1]);
     funamm = stoi(lines[2]);
     points = stoi(lines[3]);
+    autoclicker = stoi(lines[4]);
     save2.close();
+    thread thread(autoclick);
     while (true) {
         system("CLS");
         cout << "You have car " << carnum << "\nYou have " << points << " Funny points\nPress S to go to the shop\nPress M for a minor car mistake\nPress T to get a tutorial on how to do minor car mistakes\nPress O to save\n";
@@ -116,10 +136,10 @@ int main() {
             }
         if(lower(sel) == "o") {
             ofstream save("mcm.save");
-            save << carnum << "\n" << hits << "\n" << funamm << "\n" << points;
+            save << carnum << "\n" << hits << "\n" << funamm << "\n" << points << "\n" << autoclicker;
             save.close();
         }
-        }
+    }
     return 0;
 }
 

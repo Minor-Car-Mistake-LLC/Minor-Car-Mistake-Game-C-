@@ -3,6 +3,9 @@
 #include <cmath>
 #include <Windows.h>
 #include <stdlib.h>
+#include <fstream>
+#include <list>
+#include <vector>
 using namespace std;
 int carnum = 1;
 int hits = 15;
@@ -17,6 +20,11 @@ string lower(string sel) {
     string sel3(1, sel2);
     return sel3;
 }
+
+string save;
+int h = 1;
+string Text;
+vector<std::string> lines = {};
 
 void shop() {
     system("CLS");
@@ -67,10 +75,28 @@ void shop() {
 }
 
 int main() {
+    ifstream ifile;
+    ifile.open("mcm.save");
+    if (ifile) {
+        cout << "";
+    } else {
+        ofstream save("mcm.save");
+        save << "1\n15\n1\n0";
+        save.close();
+    }
 
+    ifstream save2("mcm.save");
+    while (getline (save2, Text)) { //top 10 worst pieces of code
+        lines.push_back(Text);
+    }
+    carnum = stoi(lines[0]);
+    hits = stoi(lines[1]);
+    funamm = stoi(lines[2]);
+    points = stoi(lines[3]);
+    save2.close();
     while (true) {
         system("CLS");
-        cout << "You have car " << carnum << "\nYou have " << points << " Funny points\nPress S to go to the shop\nPress M for a minor car mistake\nPress T to get a tutorial on how to do minor car mistakes\n";
+        cout << "You have car " << carnum << "\nYou have " << points << " Funny points\nPress S to go to the shop\nPress M for a minor car mistake\nPress T to get a tutorial on how to do minor car mistakes\nPress O to save\n";
         cin >> sel;
         if (lower(sel) == "t"){
             cout << "After pressing M and then Enter in the menu, you must then type any key and then press enter to perform a single hit (because c++)\nType any key and press enter to continue\n";
@@ -88,6 +114,11 @@ int main() {
                 }
             points += funamm;
             }
+        if(lower(sel) == "o") {
+            ofstream save("mcm.save");
+            save << carnum << "\n" << hits << "\n" << funamm << "\n" << points;
+            save.close();
+        }
         }
     return 0;
 }
